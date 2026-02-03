@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef enum {
     EVENT_PRINTF,
-    EVENT_PRINTF_TEXT
+    EVENT_PRINTF_TEXT,
+    EVENT_SCANF
 } EventType;
 
 typedef struct {
@@ -21,13 +23,20 @@ void log_event(Event e) {
         eventLog[eventCount++] = e;
 }
 
+char scanfloog() {
+    char buffer[64];
+    fgets(buffer, sizeof(buffer), stdin);
+    return buffer[0];
+}
+
 // engine-side: apply ONE event
 void engine_apply_event(Event e) {
     if (e.type == EVENT_PRINTF) {
         printf("%d\n", e.value);
     } else if (e.type == EVENT_PRINTF_TEXT) {
         printf("%s\n", e.textprint);
-        
+    } else if (e.type == EVENT_SCANF) {
+        char c = scanfloog();
     }
 }
 
@@ -45,6 +54,7 @@ int main() {
     log_event((Event){ EVENT_PRINTF, 20 });
     log_event((Event){ EVENT_PRINTF, 30 });
     log_event((Event){EVENT_PRINTF_TEXT, 0, "hi\n"});
+    log_event((Event){EVENT_SCANF, 0, ""});
 
     // engine replays them
     engine_replay();
