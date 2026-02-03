@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+char scanflogreturned[64];
 
 typedef enum {
     EVENT_PRINTF,
@@ -18,25 +21,30 @@ Event eventLog[MAX_EVENTS];
 int eventCount = 0;
 
 // game-side: add event to log
-void log_event(Event e) {
-    if (eventCount < MAX_EVENTS)
+int log_event(Event e) {
+    if (eventCount < MAX_EVENTS) {
         eventLog[eventCount++] = e;
+    }
+    return 1;
 }
 
-char scanfloog() {
-    char buffer[64];
+char* scanfloog() {
+    static char buffer[64];
     fgets(buffer, sizeof(buffer), stdin);
-    return buffer[0];
+    return buffer;
 }
 
 // engine-side: apply ONE event
 void engine_apply_event(Event e) {
+    
     if (e.type == EVENT_PRINTF) {
         printf("%d\n", e.value);
     } else if (e.type == EVENT_PRINTF_TEXT) {
         printf("%s\n", e.textprint);
     } else if (e.type == EVENT_SCANF) {
-        char c = scanfloog();
+        char *c = scanfloog();
+        strncpy(scanflogreturned, c, 63);
+        scanflogreturned[sizeof(scanflogreturned) - 1] = '\0';
     }
 }
 
@@ -55,9 +63,12 @@ int main() {
     log_event((Event){ EVENT_PRINTF, 30 });
     log_event((Event){EVENT_PRINTF_TEXT, 0, "hi\n"});
     log_event((Event){EVENT_SCANF, 0, ""});
+    
 
     // engine replays them
     engine_replay();
 
+    printf("Scanf returned: %s\n", scanflogreturned);
+    
     return 0;
 }
