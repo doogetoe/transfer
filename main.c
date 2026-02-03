@@ -1,12 +1,14 @@
 #include <stdio.h>
 
 typedef enum {
-    EVENT_PRINTF
+    EVENT_PRINTF,
+    EVENT_PRINTF_TEXT
 } EventType;
 
 typedef struct {
     EventType type;
     int value;
+    char textprint[64];
 } Event;
 
 #define MAX_EVENTS 128
@@ -22,9 +24,13 @@ void log_event(Event e) {
 // engine-side: apply ONE event
 void engine_apply_event(Event e) {
     if (e.type == EVENT_PRINTF) {
-        printf("%d!\n", e.value);
+        printf("%d\n", e.value);
+    } else if (e.type == EVENT_PRINTF_TEXT) {
+        printf("%s\n", e.textprint);
+        
     }
 }
+
 
 // engine-side: replay ALL events
 void engine_replay() {
@@ -38,6 +44,7 @@ int main() {
     log_event((Event){ EVENT_PRINTF, 10 });
     log_event((Event){ EVENT_PRINTF, 20 });
     log_event((Event){ EVENT_PRINTF, 30 });
+    log_event((Event){EVENT_PRINTF_TEXT, 0, "hi\n"});
 
     // engine replays them
     engine_replay();
