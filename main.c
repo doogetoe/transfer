@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-char scanflogreturned[64];
+char scanflogreturned[64]; // scanf return variable
 
 typedef enum {
     EVENT_PRINTF,
@@ -12,8 +12,8 @@ typedef enum {
 
 typedef struct {
     EventType type;
-    int value;
-    char textprint[64];
+    int value; // for integer values
+    char textprint[64]; // for text printing
 } Event;
 
 #define MAX_EVENTS 128
@@ -29,22 +29,22 @@ int log_event(Event e) {
 }
 
 char* scanfloog() {
-    static char buffer[64];
-    fgets(buffer, sizeof(buffer), stdin);
-    return buffer;
+    static char buffer[64]; // buffer
+    fgets(buffer, sizeof(buffer), stdin); // scanf but better
+    return buffer; // it does what it says
 }
 
 // engine-side: apply ONE event
 void engine_apply_event(Event e) {
     
     if (e.type == EVENT_PRINTF) {
-        printf("%d\n", e.value);
+        printf("%d\n", e.value); // print integer value
     } else if (e.type == EVENT_PRINTF_TEXT) {
-        printf("%s\n", e.textprint);
+        printf("%s\n", e.textprint); // print text, i should merge these two event types later
     } else if (e.type == EVENT_SCANF) {
-        char *c = scanfloog();
-        strncpy(scanflogreturned, c, 63);
-        scanflogreturned[sizeof(scanflogreturned) - 1] = '\0';
+        char *c = scanfloog(); // input function
+        strncpy(scanflogreturned, c, 63); // copy to return variable
+        scanflogreturned[sizeof(scanflogreturned) - 1] = '\0'; // last thingy get null terminated
     }
 }
 
@@ -68,7 +68,7 @@ int main() {
     // engine replays them
     engine_replay();
 
-    printf("Scanf returned: %s\n", scanflogreturned);
+    printf("Scanf returned: %s\n", scanflogreturned); //print result of scanf using scanf return variable
     
     return 0;
 }
